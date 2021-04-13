@@ -5,3 +5,4 @@ import constants as con
 
 def WfFracCO2(alpha):
     return ((con.Mw[0])*alpha)/((1+(0.7/0.3))*con.MwMEA)
+
