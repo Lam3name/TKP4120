@@ -5,8 +5,11 @@ import constants as con
 import WtFrac
 import compression
 
-def WtFracToAbsMols(tot, percent, molarMass):
+def WtFracToAbsMol(tot, percent, molarMass):
     return((tot*percent)/molarMass*1000)     # mol/s
+
+def fracMolToFracWt(tot, percent, molarmass):
+    return(((tot*percent)*molarmass)/1000)      #kg/s
 
 
 def massStream(educatedGuess):
@@ -15,12 +18,19 @@ def massStream(educatedGuess):
     mh1 = m1 * con.wh1
     mn1 = m1 * con.wn1
     mo1 = m1 * con.wn1
-
+    mh3 = 0
+    mn3 = 0
+    mo3 = 0
+    mh2 = 0
+    mn2 = 0
+    mo2 = 0
     #EducatedGuesses
-    m4  = educatedGuess[0]
+    m4 = educatedGuess[0]
+    m9 = educatedGuess[1] 
 
     mc2 = mc1 - mc1*con.wcapture
     mc3 = WtFrac.WtFracCO2(con.alpha3)
+    mMEA3 = 1 - mc3
 
     #volum 1
     mc4 = mc1 + mc3 - mc2
@@ -28,16 +38,29 @@ def massStream(educatedGuess):
     mn4 = mn1 + mn3 - mn2
     mo4 = mo1 + mo3 - mo2
     mMEA4 = mMEA3
-    m4 = mc4 + mh4 + mn4 + mo4
+    equation1 = (mc4 + mh4 + mn4 + mo4)/m4
     #volum 2
     mc5 = mc4
     mMEA5 = mMEA4
-    mc3 = mc6
-    mMEA3 = mMEA6
+    mc6 = mc3
+    mMEA3 = mMEA5
+
     #volum 3
-    mc9 = mc5 - mc6
+    equation2 = (mc5 - mc6)/m9
     mMEA6 = mMEA5
 
+    balance = [equation1, equation2]
+    return balance
+
+guess1 = 20
+guess2 = 10
+
+guess =  [guess1, guess2]
+ans = scipy.optimize.root(massStream, guess)
+
+ans_m4, ans_m9 = ans['x']
+print(f'm4 = {ans_m4}')
+print(f'm9 = {ans_m9}')
     
 
 
@@ -46,13 +69,11 @@ def massStream(educatedGuess):
 # Stream 1
 molsStream1 = [None]*5
 
-molsStream1[0] = WtFracToAbsMols(con.m1, con.wc1, con.Mw[0]) # CO2 mol/s
-molsStream1[1] = WtFracToAbsMols(con.m1, con.wh1, con.Mw[1]) # H2O mol/s
-molsStream1[2] = WtFracToAbsMols(con.m1, con.wn1, con.Mw[2]) # N2 mol/s
-molsStream1[3] = WtFracToAbsMols(con.m1, con.wo1, con.Mw[3]) # O2 mol/s
+molsStream1[0] = WtFracToAbsMol(con.m1, con.wc1, con.Mw[0]) # CO2 mol/s
+molsStream1[1] = WtFracToAbsMol(con.m1, con.wh1, con.Mw[1]) # H2O mol/s
+molsStream1[2] = WtFracToAbsMol(con.m1, con.wn1, con.Mw[2]) # N2 mol/s
+molsStream1[3] = WtFracToAbsMol(con.m1, con.wo1, con.Mw[3]) # O2 mol/s
 molsStream1[4] = 0                                           # MEA mol/s
-
-print(molsStream1)
 
 
 # Stream 2
