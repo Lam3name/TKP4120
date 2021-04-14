@@ -25,12 +25,13 @@ def massStream(educatedGuess):
     mn2 = 0
     mo2 = 0
     #EducatedGuesses
-    m4 = educatedGuess[0]
-    m9 = educatedGuess[1] 
+    m3 = educatedGuess[0]
+    m4 = educatedGuess[1]
+    m9 = educatedGuess[2]
 
     mc2 = mc1 - mc1*con.wcapture
     mc3 = WtFrac.WtFracCO2(con.alpha3)
-    mMEA3 = 1 - mc3
+    mMEA3 = con.waMEA*m3
 
     #volum 1
     mc4 = mc1 + mc3 - mc2
@@ -38,7 +39,7 @@ def massStream(educatedGuess):
     mn4 = mn1 + mn3 - mn2
     mo4 = mo1 + mo3 - mo2
     mMEA4 = mMEA3
-    equation1 = (mc4 + mh4 + mn4 + mo4)/m4
+    
     #volum 2
     mc5 = mc4
     mMEA5 = mMEA4
@@ -46,19 +47,25 @@ def massStream(educatedGuess):
     mMEA3 = mMEA5
 
     #volum 3
-    equation2 = (mc5 - mc6)/m9
     mMEA6 = mMEA5
 
-    balance = [equation1, equation2]
+    #EQUATIONS
+    equation0 = mMEA3 + mc3 - m3            #m3
+    equation1 = mc4 + mh4 + mn4 + mo4 - m4  #m4
+    equation2 = mc5 - mc6 - m9              #m9
+
+    balance = [equation0, equation1, equation2]
     return balance
 
-guess1 = 20
-guess2 = 10
+guess0 = 1
+guess1 = 1
+guess2 = 1
 
-guess =  [guess1, guess2]
+guess =  [guess0, guess1, guess2]
 ans = scipy.optimize.root(massStream, guess)
 
-ans_m4, ans_m9 = ans['x']
+ans_m3, ans_m4, ans_m9 = ans['x']
+print(f'm3 = {ans_m3}')
 print(f'm4 = {ans_m4}')
 print(f'm9 = {ans_m9}')
     
