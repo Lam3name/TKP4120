@@ -21,9 +21,9 @@ def massStream(educatedGuess):
     mh3 = 0
     mn3 = 0
     mo3 = 0
-    mh2 = 0
-    mn2 = 0
-    mo2 = 0
+    mh4 = 0
+    mn4 = 0
+    mo4 = 0
     #EducatedGuesses
     m3 = educatedGuess[0]
     m4 = educatedGuess[1]
@@ -35,9 +35,6 @@ def massStream(educatedGuess):
 
     #volum 1
     mc4 = mc1 + mc3 - mc2
-    mh4 = mh1 + mh3 - mh2
-    mn4 = mn1 + mn3 - mn2
-    mo4 = mo1 + mo3 - mo2
     mMEA4 = mMEA3
     
     #volum 2
