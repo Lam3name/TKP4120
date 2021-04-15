@@ -1,18 +1,18 @@
-
-
-import scipy.optimize
+import scipy.integrate
 import numpy as np
 import matplotlib.pyplot as plt
+import constants as con
 
 
-def entalpivann(T2):
-    
+def enthalpyWater(T2):
     T1 = 298
-    Cp = 5.05536*T - (T^2)*5.6552*10^(-3) - (T^3)*1.9*10^(-5)
-    integral_cp = scipy.integrate.quad(Cp, T1, T2)
+    Cp = con.cpg[1] #5.05536*T - (T^2)*5.6552*10^(-3) - (T^3)*1.9*10^(-5)
+    integrand = lambda T: Cp*T
     
-    entalpi = -13423.3 + integral_cp
-    print(entalpi) 
-    return
+    integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
+    
+    enthalpi = -13423.3 + integralCp[0]
+    
+    return enthalpi
 
-entalpivann(398)
+print(enthalpyWater(398))
