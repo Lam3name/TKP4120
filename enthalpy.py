@@ -6,8 +6,7 @@ import constants as con
 
 def enthalpyWater(T2):
     T1 = 298
-    Cp = con.cpg[1] #5.05536*T - (T^2)*5.6552*10^(-3) - (T^3)*1.9*10^(-5)
-    integrand = lambda T: Cp*T
+    integrand = lambda T: (5.05536*T - (T**2)*5.6552*10**(-3) - (T**3)*1.9*10**(-5))
     
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
     
