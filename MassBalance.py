@@ -34,7 +34,7 @@ def massStream(educatedGuess):
 
     mMEA3 = con.waMEA*m3
     mc2 = mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(con.alpha3,con.Mw[0],con.Mw[1]) * mMEA3
-    mc3 = WtFrac.WtFracCO2(con.alpha3)
+    mc3 = m3 * molPercentToWtPercent(alpha3,con.Mw[0]
     
 
     #volum 1
