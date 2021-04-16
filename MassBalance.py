@@ -21,7 +21,6 @@ def massStream(educatedGuess):
     mh1 = m1 * con.wh1
     mn1 = m1 * con.wn1
     mo1 = m1 * con.wn1
-    mh3 = 0
     mn3 = 0
     mo3 = 0
     mh4 = 0
@@ -32,17 +31,25 @@ def massStream(educatedGuess):
     m4 = educatedGuess[1]
     m9 = educatedGuess[2]
 
-    mMEA3 = con.waMEA*m3
-    mc2 = mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(con.alpha3,con.Mw[0],con.Mw[1]) * mMEA3
-    mc3 = m3 * molPercentToWtPercent(alpha3,con.Mw[0]
     
 
     #volum 1
+    
+    
+    mMEA3 = m3 * con.waMEA*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
+    mc2 = mc1*(1-con.wcapture) #(mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(con.alpha3,con.Mw[0],con.Mw[1]) * mMEA3)
+    mc3 = m3 * molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
+    mh3 = m3 * (1-con.waMEA)*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
+    mh4 = mh3
     mc4 = mc1 + mc3 - mc2
     mMEA4 = mMEA3
-    
+    m2 = mh1 + mn1 + mc1 - mc3 + mo1
+    m4 = m1 + m3 - m2
     #volum 2
     mc5 = mc4
+    mh5 = mh4
+    
+
     mMEA5 = mMEA4
     mc6 = mc3
     mMEA3 = mMEA5
@@ -51,16 +58,16 @@ def massStream(educatedGuess):
     mMEA6 = mMEA5
 
     #EQUATIONS
-    equation0 = mMEA3 + mc3 - m3            #m3
+    equation0 = mMEA3 + mc3 + mh3 - m3            #m3
     equation1 = mc4 + mh4 + mn4 + mo4 - m4  #m4
     equation2 = mc5 - mc6 - m9              #m9
 
     balance = [equation0, equation1, equation2]
     return balance
 
-guess0 = 1
-guess1 = 1
-guess2 = 1
+guess0 = 700
+guess1 = 400
+guess2 = 100
 
 guess =  [guess0, guess1, guess2]
 ans = scipy.optimize.root(massStream, guess)
