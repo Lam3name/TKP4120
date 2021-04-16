@@ -11,6 +11,9 @@ def WtFracToAbsMol(tot, percent, molarMass):
 def fracMolToFracWt(tot, percent, molarmass):
     return(((tot*percent)*molarmass)/1000)      #kg/s
 
+def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight percent from mole percent.
+    return((mw2/mw1)*percent)
+
 
 def massStream(educatedGuess):
     m1 = con.m1
@@ -29,9 +32,10 @@ def massStream(educatedGuess):
     m4 = educatedGuess[1]
     m9 = educatedGuess[2]
 
-    mc2 = mc1 - mc1*con.wcapture
-    mc3 = WtFrac.WtFracCO2(con.alpha3)
     mMEA3 = con.waMEA*m3
+    mc2 = mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(alpha3,con.Mw[0],con.Mw[1]) * mMEA3
+    mc3 = WtFrac.WtFracCO2(con.alpha3)
+    
 
     #volum 1
     mc4 = mc1 + mc3 - mc2
