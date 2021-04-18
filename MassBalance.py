@@ -37,7 +37,7 @@ def massStream(educatedGuess):
     
     
     mMEA3 = m3 * con.waMEA*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
-    mc2 = mc1*(1-con.wcapture) #(mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(con.alpha3,con.Mw[0],con.Mw[1]) * mMEA3)
+    mc2 = mc1 * (1-con.wcapture) #(mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(con.alpha3,con.Mw[0],con.Mw[1]) * mMEA3)
     mc3 = m3 * molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
     mh3 = m3 * (1-con.waMEA)*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
     mh4 = mh3
