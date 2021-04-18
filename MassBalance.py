@@ -21,8 +21,9 @@ def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight perc
 
 def massStream(educatedGuess):
     #EducatedGuesses
-    m3 = educatedGuess[0]
-    m4 = educatedGuess[1]
+    m2 = educatedGuess[0]
+    m3 = educatedGuess[1]
+    m4 = educatedGuess[2]
 
     #Stream 1
     m1 = con.m1
@@ -32,7 +33,7 @@ def massStream(educatedGuess):
     mo1 = m1 * con.wn1
 
     #Stream 2
-    m2 = m1 + m3 - m4
+    #m2 = m1 + m3 - m4
     mc2 = (1 - con.wcapture) * mc1
     mh2 = mh1
     mn2 = mn1
@@ -40,16 +41,19 @@ def massStream(educatedGuess):
     #m2 = mc2 + mh2 + mn2 + mo2 
 
     #Stream 3
+    #m3 = m4 - m9
     mc3 = WtFrac.WtFracCO2(con.alpha3) * m3
     mh3 = (1 - WtFrac.WtFracCO2(con.alpha3)) * 0.7 * m3
     mMEA3 = (1 - WtFrac.WtFracCO2(con.alpha3)) * 0.3 * m3
     #m3 = mc3 + mh3 + mMEA3
-
+    
     #Stream 4
-    mc4 = mc1 * con.wcapture
+    #m4 = m1 + m3 - m2
+    mc4 = mc1 * con.wcapture + mc3
     mh4 = mh3
     mMEA4 = mMEA3
     #m4 = mc4 + mh4 + mMEA4
+
 
     m5 = m4
     m6 = m3
@@ -59,21 +63,25 @@ def massStream(educatedGuess):
     mc9 = mc4
     m9 = mc9
 
-    equation0 = mc3 + mh3 + mMEA3 - m3
-    equation1 = mc4 + mh4 + mMEA4 - m4
-    
-    balance = [equation0, equation1]
+    equation0 = m1 + m3 - m4 - m2
+    equation1 = m4 - m9 - m3
+    equation2 = m1 + m3 - m2 - m4
+
+    balance = [equation0, equation1, equation2]
     return balance
 
-guess0 = 100
-guess1 = 150
+guess0 = 450
+guess1 = 100
+guess2 = 150
 
-guess =  [guess0, guess1]
+guess =  [guess0, guess1, guess2]
 ans = scipy.optimize.root(massStream, guess)
 
-ans_m3, ans_m4 = ans['x']
+ans_m2, ans_m3, ans_m4 = ans['x']
+print(f'm2 = {ans_m2}')
 print(f'm3 = {ans_m3}')
 print(f'm4 = {ans_m4}')
+
 
     
 
