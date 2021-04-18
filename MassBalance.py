@@ -14,68 +14,67 @@ def fracMolToFracWt(tot, percent, molarmass):
 def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight percent from mole percent.
     return((mw2/mw1)*percent)
 
+#Calculation testing
+#wc3 = WtFrac.WtFracCO2(con.alpha3)
+#print(wc3+(1-wc3)*0.7+(1-wc3)*0.3)
+
 
 def massStream(educatedGuess):
+    #EducatedGuesses
+    m3 = educatedGuess[0]
+    m4 = educatedGuess[1]
+
+    #Stream 1
     m1 = con.m1
     mc1 = m1 * con.wc1
     mh1 = m1 * con.wh1
     mn1 = m1 * con.wn1
     mo1 = m1 * con.wn1
-    mn3 = 0
-    mo3 = 0
-    mh4 = 0
-    mn4 = 0
-    mo4 = 0
-    #EducatedGuesses
-    m3 = educatedGuess[0]
-    m4 = educatedGuess[1]
-    m9 = educatedGuess[2]
 
-    
+    #Stream 2
+    m2 = m1 + m3 - m4
+    mc2 = (1 - con.wcapture) * mc1
+    mh2 = mh1
+    mn2 = mn1
+    mo2 = mo1
+    #m2 = mc2 + mh2 + mn2 + mo2 
 
-    #volum 1
-    
-    
-    mMEA3 = m3 * con.waMEA*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
-    mc2 = mc1 * (1-con.wcapture) #(mc1 - mc1 * (1-con.wcapture) + molPercentToWtPercent(con.alpha3,con.Mw[0],con.Mw[1]) * mMEA3)
-    mc3 = m3 * molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
-    mh3 = m3 * (1-con.waMEA)*(100/(100+molPercentToWtPercent(con.alpha3,con.Mw[1],con.MwMEA)))
+    #Stream 3
+    mc3 = WtFrac.WtFracCO2(con.alpha3) * m3
+    mh3 = (1 - WtFrac.WtFracCO2(con.alpha3)) * 0.7 * m3
+    mMEA3 = (1 - WtFrac.WtFracCO2(con.alpha3)) * 0.3 * m3
+    #m3 = mc3 + mh3 + mMEA3
+
+    #Stream 4
+    mc4 = mc1 * con.wcapture
     mh4 = mh3
-    mc4 = mc1 + mc3 - mc2
     mMEA4 = mMEA3
-    m2 = mh1 + mn1 + mc1 - mc3 + mo1
-    m4 = m1 + m3 - m2
-    #volum 2
-    mc5 = mc4
-    mh5 = mh4
+    #m4 = mc4 + mh4 + mMEA4
+
+    m5 = m4
+    m6 = m3
+
+    #Stream 9
+    m9 = m5 - m6
+    mc9 = mc4
+    m9 = mc9
+
+    equation0 = mc3 + mh3 + mMEA3 - m3
+    equation1 = mc4 + mh4 + mMEA4 - m4
     
-
-    mMEA5 = mMEA4
-    mc6 = mc3
-    mMEA3 = mMEA5
-
-    #volum 3
-    mMEA6 = mMEA5
-
-    #EQUATIONS
-    equation0 = mMEA3 + mc3 + mh3 - m3            #m3
-    equation1 = mc4 + mh4 + mn4 + mo4 - m4  #m4
-    equation2 = mc5 - mc6 - m9              #m9
-
-    balance = [equation0, equation1, equation2]
+    balance = [equation0, equation1]
     return balance
 
-guess0 = 700
-guess1 = 400
-guess2 = 100
+guess0 = 100
+guess1 = 150
 
-guess =  [guess0, guess1, guess2]
+guess =  [guess0, guess1]
 ans = scipy.optimize.root(massStream, guess)
 
-ans_m3, ans_m4, ans_m9 = ans['x']
+ans_m3, ans_m4 = ans['x']
 print(f'm3 = {ans_m3}')
 print(f'm4 = {ans_m4}')
-print(f'm9 = {ans_m9}')
+
     
 
 
