@@ -21,80 +21,100 @@ def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight perc
 
 def massStream(educatedGuess):
     #EducatedGuesses
-    m3 = educatedGuess[0]
-    m4 = educatedGuess[1]
+    m2 = educatedGuess[0]
+    m3 = educatedGuess[1]
+    m4 = educatedGuess[2]
+    m5 = educatedGuess[3]
+    m6 = educatedGuess[4]
+    m9 = educatedGuess[5]
+    wc2 = educatedGuess[6]
+    wh2 = educatedGuess[7]
+    wn2 = educatedGuess[8]
+    wo2 = educatedGuess[9]
+    wMEA3 = educatedGuess[10]
+    wMEA4 = educatedGuess[11]
+    wMEA5 = educatedGuess[12]
+    wMEA6 = educatedGuess[13]
 
-    #Stream 1
+    wcapture = con.wcapture
+
     m1 = con.m1
-    mc1 = m1 * con.wc1
-    mh1 = m1 * con.wh1
-    mn1 = m1 * con.wn1
-    mo1 = m1 * con.wn1
-
-    #Stream 2
-    m2 = m1 + m3 - m4
-    mc2 = (1 - con.wcapture) * mc1
-    mh2 = mh1
-    mn2 = mn1
-    mo2 = mo1
-    #m2 = mc2 + mh2 + mn2 + mo2 
-
-    #Stream 3
-    mc3 = WtFrac.WtFracCO2(con.alpha3) * m3
-    mh3 = (1 - WtFrac.WtFracCO2(con.alpha3)) * 0.7 * m3
-    mMEA3 = (1 - WtFrac.WtFracCO2(con.alpha3)) * 0.3 * m3
-    #m3 = mc3 + mh3 + mMEA3
-
-    #Stream 4
-    mc4 = mc1 * con.wcapture
-    mh4 = mh3
-    mMEA4 = mMEA3
-    #m4 = mc4 + mh4 + mMEA4
-
-    m5 = m4
-    m6 = m3
-
-    #Stream 9
-    m9 = m5 - m6
-    mc9 = mc4
-    m9 = mc9
-
-    equation0 = mc3 + mh3 + mMEA3 - m3
-    equation1 = mc4 + mh4 + mMEA4 - m4
+    wc1 = con.wc1
+    wh1 = con.wh1
+    wn1 = con.wn1
+    wo1 = con.wo1
     
-    balance = [equation0, equation1]
+    wc3 = WtFrac.WtFracCO2(con.alpha3)
+    wc4 = WtFrac.WtFracCO2(con.alpha4)
+    wc5 = wc4
+    wc6 = wc3
+    wc8 = molPercentToWtPercent(con.xc8,con.Mw[0],con.Mw[1])
+    wc9 = con.wc9
+
+    wh8 = molPercentToWtPercent((1-con.xc8),con.Mw[1],con.Mw[0])
+    m8 = (m1 * wc1) * wcapture + ((m1 * wc1) * wcapture)*wh8
+
+    wMEA1 = 0
+    wMEA2 = 0
+    wh3 = 0
+    wh4 = 0
+    wo3 = 0
+    wo4 = 0
+    wn3 = 0
+    wn4 = 0
+    wMEA9 = 0
+
+
+    equation1 = m1 * wc1 + m3 * wc3 - m4 * wc4 - m2 * wc2
+    equation2 = m1 * wMEA1 + m3 * wMEA3 - m4 * wMEA4 - m2 * wMEA2
+    equation3 = m1 * wh1 + m3 * wh3 - m4 * wh4 - m2 * wh2
+    equation4 = m1 * wo1 + m3 * wo3 - m4 * wo4 - m2 * wo2
+    equation5 = m1 * wn1 + m3 * wn3 - m4 * wn4 - m2 * wn2
+    equation6 = m5 * wc5 - m9 * wc9 - m6 * wc6 
+    equation7 = m5 * wMEA5 - m9 * wMEA9 - m6 * wMEA6
+    equation8 = m5 - m4
+    equation9 = m6 - m3
+    equation10 = wMEA4 - wMEA5
+    equation11 = wMEA3 - wMEA6
+    equation12 = wc4 + wh4 + wo4 + wn4 + wMEA4 - 1
+    equation13 = wc3 + wh3 + wo3 + wn3 + wMEA3 - 1
+    equation14 = ((1 - wcapture) * (m1 * wc1)) - (m2 * wc2) 
+    
+    balance = [equation1, equation2, equation3, equation4, equation5, equation6, equation7, equation8, equation9, equation10, equation11, equation12, equation13, equation14]
     return balance
 
-guess0 = 100
-guess1 = 150
+guess1 = 450
+guess2 = 900
+guess3 = 950
+guess4 = 950
+guess5 = 900
+guess6 = 36
+guess7 = 0.02
+guess8 = 0.03
+guess9 = 0.8
+guess10 = 0.15
+guess11 = 0.9
+guess12 = 0.9
+guess13 = 0.9
+guess14 = 0.9
 
-guess =  [guess0, guess1]
+
+
+guess =  [guess1, guess2, guess3, guess4, guess5, guess6, guess7, guess8, guess9, guess10, guess11, guess12, guess13, guess14]
 ans = scipy.optimize.root(massStream, guess)
 
-ans_m3, ans_m4 = ans['x']
+ans_m2, ans_m3, ans_m4, ans_m5, ans_m6, ans_m9, ans_wc2, ans_wh2, ans_wn2, ans_wo2, ans_wMEA3, ans_wMEA4, ans_wMEA5, ans_wMEA6 = ans['x']
+print(f'm2 = {ans_m2}')
 print(f'm3 = {ans_m3}')
 print(f'm4 = {ans_m4}')
-
-    
-
-
-
-
-# Stream 1
-molsStream1 = [None]*5
-
-molsStream1[0] = WtFracToAbsMol(con.m1, con.wc1, con.Mw[0]) # CO2 mol/s
-molsStream1[1] = WtFracToAbsMol(con.m1, con.wh1, con.Mw[1]) # H2O mol/s
-molsStream1[2] = WtFracToAbsMol(con.m1, con.wn1, con.Mw[2]) # N2 mol/s
-molsStream1[3] = WtFracToAbsMol(con.m1, con.wo1, con.Mw[3]) # O2 mol/s
-molsStream1[4] = 0                                           # MEA mol/s
-
-
-# Stream 2
-molsStream2 = [None]*5
-
-molsStream1[0] = molsStream1[0] * con.alpha3 # CO2 mol/s
-molsStream1[1] = 0 # H2O mol/s
-molsStream1[2] = 0 # N2 mol/s
-molsStream1[3] = 0 # O2 mol/s
-molsStream1[4] = 0                                           # MEA mol/s
+print(f'm5 = {ans_m5}')
+print(f'm6 = {ans_m6}')
+print(f'm9 = {ans_m9}')
+print(f'wc2 = {ans_wc2}')
+print(f'wh2 = {ans_wh2}')
+print(f'wn2 = {ans_wn2}')
+print(f'wo2 = {ans_wo2}')
+print(f'wMEA3 = {ans_wMEA3}')
+print(f'wMEA4 = {ans_wMEA4}')
+print(f'wMEA5 = {ans_wMEA5}')
+print(f'wMEA6 = {ans_wMEA6}')
