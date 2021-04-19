@@ -5,20 +5,16 @@ import constants as con
 import WtFrac
 import compression
 
-def WtFracToAbsMol(tot, percent, molarMass):
-    return((tot*percent)/molarMass*1000)     # mol/s
-
-def fracMolToFracWt(tot, percent, molarmass):
-    return(((tot*percent)*molarmass)/1000)      #kg/s
 
 def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight percent from mole percent.
     return((mw2/mw1)*percent)
 
+
+
+
 #Calculation testing
-#wc3 = WtFrac.WtFracCO2(con.alpha3)
-#print(wc3+(1-wc3)*0.7+(1-wc3)*0.3)
-
-
+print(WtFrac.WtFracCO2(con.alpha3))
+print(WtFrac.WtFracCO2(con.alpha4))
 def massStream(educatedGuess):
     #EducatedGuesses
     m2 = educatedGuess[0]
@@ -36,6 +32,7 @@ def massStream(educatedGuess):
     wMEA5 = educatedGuess[12]
     wMEA6 = educatedGuess[13]
 
+    #Known constants
     wcapture = con.wcapture
 
     m1 = con.m1
@@ -43,16 +40,12 @@ def massStream(educatedGuess):
     wh1 = con.wh1
     wn1 = con.wn1
     wo1 = con.wo1
-    
+
     wc3 = WtFrac.WtFracCO2(con.alpha3)
     wc4 = WtFrac.WtFracCO2(con.alpha4)
     wc5 = wc4
     wc6 = wc3
-    wc8 = molPercentToWtPercent(con.xc8,con.Mw[0],con.Mw[1])
     wc9 = con.wc9
-
-    wh8 = molPercentToWtPercent((1-con.xc8),con.Mw[1],con.Mw[0])
-    m8 = (m1 * wc1) * wcapture + ((m1 * wc1) * wcapture)*wh8
 
     wMEA1 = 0
     wMEA2 = 0
@@ -83,25 +76,23 @@ def massStream(educatedGuess):
     balance = [equation1, equation2, equation3, equation4, equation5, equation6, equation7, equation8, equation9, equation10, equation11, equation12, equation13, equation14]
     return balance
 
-guess1 = 450
-guess2 = 900
-guess3 = 950
-guess4 = 950
-guess5 = 900
-guess6 = 36
-guess7 = 0.02
-guess8 = 0.03
-guess9 = 0.8
-guess10 = 0.15
+guess1 = 500
+guess2 = 800
+guess3 = 900
+guess4 = 900
+guess5 = 800
+guess6 = 30
+guess7 = 0.01
+guess8 = 0.02
+guess9 = 0.74
+guess10 = 0.13
 guess11 = 0.9
-guess12 = 0.9
-guess13 = 0.9
+guess12 = 0.86
+guess13 = 0.86
 guess14 = 0.9
 
-
-
 guess =  [guess1, guess2, guess3, guess4, guess5, guess6, guess7, guess8, guess9, guess10, guess11, guess12, guess13, guess14]
-ans = scipy.optimize.root(massStream, guess)
+ans = scipy.optimize.root(massStream, guess, method='lm',tol=0.0000000001)
 
 ans_m2, ans_m3, ans_m4, ans_m5, ans_m6, ans_m9, ans_wc2, ans_wh2, ans_wn2, ans_wo2, ans_wMEA3, ans_wMEA4, ans_wMEA5, ans_wMEA6 = ans['x']
 print(f'm2 = {ans_m2}')
