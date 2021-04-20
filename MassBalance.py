@@ -57,7 +57,7 @@ def massStream(educatedGuess):
     wn4 = 0
     wMEA9 = 0
 
-
+    equation0 = m1 - (m1*wc1)*wcapture - m2
     equation1 = m1 * wc1 + m3 * wc3 - m4 * wc4 - m2 * wc2
     equation2 = m1 * wMEA1 + m3 * wMEA3 - m4 * wMEA4 - m2 * wMEA2
     equation3 = m1 * wh1 + m3 * wh3 - m4 * wh4 - m2 * wh2
@@ -71,16 +71,17 @@ def massStream(educatedGuess):
     equation11 = wMEA3 - wMEA6
     equation12 = wc4 + wh4 + wo4 + wn4 + wMEA4 - 1
     equation13 = wc3 + wh3 + wo3 + wn3 + wMEA3 - 1
-    equation14 = ((1 - wcapture) * (m1 * wc1)) - (m2 * wc2) 
+    equation14 = ((1 - wcapture) * (m1 * wc1)) - (m2 * wc2)
     
-    balance = [equation1, equation2, equation3, equation4, equation5, equation6, equation7, equation8, equation9, equation10, equation11, equation12, equation13, equation14]
+    
+    balance = [equation0, equation1, equation2, equation3, equation4, equation5, equation6, equation7, equation8, equation9, equation10, equation11, equation12, equation13, equation14]
     return balance
 
 guess1 = 500
-guess2 = 800
-guess3 = 900
-guess4 = 900
-guess5 = 800
+guess2 = 500
+guess3 = 550
+guess4 = 550
+guess5 = 500
 guess6 = 30
 guess7 = 0.01
 guess8 = 0.02
