@@ -7,7 +7,7 @@ import compression
 
 
 def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight percent from mole percent.
-    return((mw2/mw1)*percent)
+    return((percent*mw1)/(percent*mw1+(1-percent)*mw2))
 
 
 
@@ -93,7 +93,7 @@ guess13 = 0.86
 guess14 = 0.9
 
 guess =  [guess1, guess2, guess3, guess4, guess5, guess6, guess7, guess8, guess9, guess10, guess11, guess12, guess13, guess14]
-ans = scipy.optimize.root(massStream, guess, method='lm',tol=0.0000000001)
+ans = scipy.optimize.root(massStream, guess, method='lm',tol=0.001)
 
 ans_m2, ans_m3, ans_m4, ans_m5, ans_m6, ans_m9, ans_wc2, ans_wh2, ans_wn2, ans_wo2, ans_wMEA3, ans_wMEA4, ans_wMEA5, ans_wMEA6 = ans['x']
 print(f'm2 = {ans_m2}')
@@ -110,3 +110,20 @@ print(f'wMEA3 = {ans_wMEA3}')
 print(f'wMEA4 = {ans_wMEA4}')
 print(f'wMEA5 = {ans_wMEA5}')
 print(f'wMEA6 = {ans_wMEA6}')
+
+
+
+wc3 = WtFrac.WtFracCO2(con.alpha3)
+wc4 = WtFrac.WtFracCO2(con.alpha4)
+wc5 = wc4
+wc6 = wc3
+wc8 = molPercentToWtPercent(0.7,con.Mw[0],con.Mw[1])
+wc9 = con.wc9
+m8 = 36/(wc8/(1-wc8)) + 36
+print(f'm8 = {m8}')
+print(f'wc3 = {wc3}')
+print(f'wc4 = {wc4}')
+print(f'wc5 = {wc5}')
+print(f'wc6 = {wc6}')
+print(f'wc8 = {wc8}')
+print(f'wc9 = {wc9}')
