@@ -22,6 +22,6 @@ def taskPatrialPressureCO2():
 taskPatrialPressureCO2()
 
 def taskWtFracCO2():
-    print(WtFrac.WfFracCO2(con.alpha3))
+    print(WtFrac.WtFracCO2(con.alpha3))
     return 0
 
