@@ -1,5 +1,3 @@
-
-
 import scipy.integrate
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,53 +5,35 @@ import constants as con
 
 
 def enthalpyWater(T1,T2,m):
-    
     integrand = lambda T: (5.05536*T - (T**2)*5.6552*10**(-3) - (T**3)*1.9*10**(-5))
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
     enthalpi = (con.hf[1] + integralCp[0])*m
-    
     return enthalpi
-
-
 
 
 def enthalpy_MEA(T1,T2, mass, fraction):
     T1 = 379
     T2= 313
-    
     integrand = lambda T: (-0.64878*T + (T**2)*1.6992*10**(-2) - (T**3)*1.9*(10**(-5)))
-
-    
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    
     enthalpi = (-13599 + integralCp[0])*mass*fraction
-    
-    
     return enthalpi/1000
 
 
 
 def enthalpy_MEA_H20(T2):
     T1 = 313
-    integrand = lambda T: (-4.9324*T - (T**2)*0.01469 - (T**(-0.5859))*169.6243)
-    
+    integrand = lambda T: (-4.9324*T - (T**2)*0.01469 - (T**(-0.5859))*169.6243)    
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    
     enthalpi = -26722.3 + integralCp[0]
-    
     return enthalpi
 
 
 
 def enthalpy_MEA_H20_CO2(T1,T2,mass,w_MEAsol, w_co2):
-    
     integrand = lambda T: (0.585*T - (T**2)*0.0009)
-    
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    
     enthalpi = (-13599*w_MEAsol + -8933*w_co2  + integralCp[0])*mass
-    
-
     return enthalpi/1000
 
 
