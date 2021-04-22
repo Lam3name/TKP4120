@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import constants as con
 import WtFrac
-import compression
 
 
 def molPercentToWtPercent(percent, mw1, mw2):       #percent Returns weight percent from mole percent.
