@@ -2,79 +2,120 @@ import scipy.integrate
 import numpy as np
 import matplotlib.pyplot as plt
 import constants as con
+import MassBalance as mb
 
+
+coeff_CO2 = [con.Ac, con.Bc]
+coeff_MEA = [con.Aa, con.Ba, con.Ca]
+coeff_water = [con.Aw, con.Bw, con.Cw]
+coeff_CHM = [con.As, con.Bs, con.Cs]
+
+
+
+    
+    
 
 def enthalpyWater(T1,T2,m):
-    integrand = lambda T: (5.05536*T - (T**2)*5.6552*10**(-3) - (T**3)*1.9*10**(-5))
+    a = coeff_water[0]
+    b = coeff_water[1]
+    c = coeff_water[2]
+    integrand = lambda T: a + b*T + c*T**2
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    enthalpi = (con.hf[1] + integralCp[0])*m
-    return enthalpi
+    enthalpy = (con.hf[1] + integralCp[0])*m
+    return enthalpy
 
 
-def enthalpy_MEA(T1,T2, mass, fraction):
-    T1 = 379
-    T2= 313
-    integrand = lambda T: (-0.64878*T + (T**2)*1.6992*10**(-2) - (T**3)*1.9*(10**(-5)))
+def enthalpy_MEA():
+    a = coeff_MEA[0]
+    b = coeff_MEA[1]
+    c = coeff_MEA[2]
+    integrand = lambda T: a + b*T + c*T**2
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    enthalpi = (-13599 + integralCp[0])*mass*fraction
-    return enthalpi/1000
-
-
-
-def enthalpy_MEA_H20(T2):
-    T1 = 313
-    integrand = lambda T: (-4.9324*T - (T**2)*0.01469 - (T**(-0.5859))*169.6243)    
+    ##enthalpi = (con.hfsol + integralCp[0])*m
+    return integralCp
+    
+   
+def Enthalpy_CO2(T1,T2, w_co2):
+    a = coeff_CO2[0]
+    b = coeff_CO2[1]
+   
+    integrand = lambda T: a + b*T 
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    enthalpi = -26722.3 + integralCp[0]
-    return enthalpi
+    enthalpy = (con.hf[0] + integralCp[0])*w_co2
+    return enthalpy/1000
+    
+
+
+def enthalpy_MEAsol(wMEA,T1,T2):
+    a = coeff_CHM[0]
+    b = coeff_CHM[1]
+    c = coeff_CHM[2]
+    d = coeff_water[0]
+    e = coeff_water[1]
+    f = coeff_water[2]
+    g = coeff_MEA[0]
+    h = coeff_MEA[1]
+    i = coeff_MEA[2]
+    
+    integrand = lambda T: (1-wMEA)*(d + e*T + f*T**2) + wMEA*(g + h*T + i*T**2) + wMEA*(1-wMEA)*(a + b*T + wMEA*c*(T-273.15)**(-1.5859))
+    Cp_sol = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
+    enthalpy = (con.hfsol + Cp_sol[0])*wMEA
+    return enthalpy/1000
+    
+##def enthalpy_MEAsol(wMEA, T1,T2):
+  ##  integrand = lambda T: Heatcapasity_MEAsol(wMEA)
+    ##integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
+    ##enthalpy = (con.hfsol + integralCp[0])*wMEA
+    ##return enthalpy/1000
+    
+    
+    
+
+##def enthalpy_MEA_H20(T2):
+  ##  integrand = lambda T: (-4.9324*T - (T**2)*0.01469 - (T**(-0.5859))*169.6243)    
+    ##integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
+    ##enthalpi = -26722.3 + integralCp[0]
+    ##return enthalpi
 
 
 
-def enthalpy_MEA_H20_CO2(T1,T2,mass,w_MEAsol, w_co2):
-    integrand = lambda T: (0.585*T - (T**2)*0.0009)
-    integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
-    enthalpi = (-13599*w_MEAsol + -8933*w_co2  + integralCp[0])*mass
-    return enthalpi/1000
+def enthalpy_MEA_H20_CO2(mass,w_MEAsol, w_co2, T1,T2,):
+    
+    enthalpy_MEA = enthalpy_MEAsol(w_MEAsol, T1,T2)
+    enthalpy_co2 = Enthalpy_CO2(T1,T2, w_co2)
+    print(enthalpy_co2)
+    enthalpy = (enthalpy_MEA + enthalpy_co2 + con.habs_m - con.habs_m)*mass
+    return enthalpy
 
 
 
 
 
 
-def stream8(mass,w_co2,w_h2o, T2,T1):
+def stream8(mass,w_co2,w_h2o, T1,T2):
     ##entalpi_co2 = (-8933 + 0.868*(T2-T1))*mass*w_co2
     ##entalpi_h2o = (-13423.3 +  1.866*(T2-T1))*mass*w_h2o
-    entalpi = (-8933*w_co2 -13423.3*w_h2o + (0.868*w_co2 + 1.866*w_h2o))*mass
+    entalpi = (con.hf[0]*w_co2 + con.hf[1]*w_h2o + (con.cpg[0]*w_co2 + con.cpg[1]*w_h2o))*mass
     return entalpi/1000
 
 def stream9(mass, w_co2):
-    entalpi = -8933*mass*w_co2
+    entalpi = con.hf[0]*mass*w_co2
     return entalpi/1000
 
 def stream12(mass,w_h2o, w_co2):
     enthalpy_water = (enthalpyWater(0,0,mass))*w_h2o
-    enthalpy_co2 = -8933*w_co2*mass
+    enthalpy_co2 = con.hf[0]*w_co2*mass
     enthalpy = enthalpy_water + enthalpy_co2
     return enthalpy/1000
 
 def Co2_MEA(mass,w_h2o, w_co2,T1,T2):
     enthalpy_water = (enthalpyWater(T1,T2,mass))*w_h2o
-    enthalpy_co2 = -8933*w_co2*mass
+    enthalpy_co2 = con.hf[0]*w_co2*mass
     enthalpy = enthalpy_water + enthalpy_co2
     return enthalpy/1000
 
 
 
-
-
-stream4 = Co2_MEA(554.4274733798745,0.9027283889980354, 0.09727161100196464,313,328)
-stream5 = Co2_MEA(554.4274733798745,0.9027283889980354, 0.09727161100196464,328,379)
-stream8 =  stream8(42.32,0.149,0.8508,379,298)
-stream9 =  stream9(36,1)
-stream12 =  Co2_MEA(42.32, 0.8508,0.149,298,298)
-stream3 = Co2_MEA(518.4274733798745,0.9654145383104126, 0.0346, 379, 313)
-stream6 = Co2_MEA(518.4274733798745, 0.9654145383104126, 0.0346, 379, 393)
-stream7 = Co2_MEA(518.4274733798745, 0.9654145383104126, 0.0346,393, 333)
 
 
 
@@ -85,13 +126,17 @@ def stream7enthalpy():
     return H7
 
 
-def T7():
-    integrand = lambda T: (0.585*T - (T**2)*0.0009)
-    print(integrand)
-    return 
-
     
+stream3 = enthalpy_MEA_H20_CO2(mb.ans_m3,mb.ans_wMEA3, mb.wc3, 379, 313)
+stream4 = enthalpy_MEA_H20_CO2(mb.ans_m4,mb.ans_wMEA4, mb.wc4,313,328)
+stream5 = enthalpy_MEA_H20_CO2(mb.ans_m5, mb.ans_wMEA5, mb.wc5,328,379)
+stream6 = enthalpy_MEA_H20_CO2(mb.ans_m6, mb.ans_wMEA6, mb.wc6, 379, 393)
 stream7 = stream7enthalpy()
+stream8 =  stream8(mb.m8,1-mb.wc8,mb.wc8,379,298)
+stream9 =  stream9(mb.ans_m9,1)
+stream12 =  stream12(mb.m8, 1-mb.wc8,mb.wc8)
+    
+
 
 
 
@@ -112,9 +157,11 @@ Areal = heattransferareal(328,379,393, 366.8)
 
 def CoolerV2(T2,T1): ##T2 = T11 og T1=T10
     q_v2 = stream7 - stream3
-    integrand = lambda T: (5.05536*T - (T**2)*5.6552*10**(-3) - (T**3)*1.9*10**(-5))
+    a = coeff_water[0]
+    b = coeff_water[1]
+    c = coeff_water[2]
+    integrand = lambda T: a + b*T + c*T**2
     integralCp = scipy.integrate.quad(integrand, T1, T2)
-    
     m10= q_v2*10**3/integralCp[0]
     return m10
 
