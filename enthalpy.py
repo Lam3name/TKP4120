@@ -25,7 +25,7 @@ def enthalpyWater(T1,T2,m):
     return enthalpy
 
 
-def enthalpy_MEA():
+def enthalpy_MEA(T1, T2, m):
     a = coeff_MEA[0]
     b = coeff_MEA[1]
     c = coeff_MEA[2]
@@ -41,6 +41,7 @@ def Enthalpy_CO2(T1,T2, w_co2):
    
     integrand = lambda T: a + b*T 
     integralCp = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
+    print("Cp CO2 =", integralCp[0])
     enthalpy = (con.hf[0] + integralCp[0])*w_co2
     return enthalpy/1000
     
@@ -59,6 +60,7 @@ def enthalpy_MEAsol(wMEA,T1,T2):
     
     integrand = lambda T: (1-wMEA)*(d + e*T + f*T**2) + wMEA*(g + h*T + i*T**2) + wMEA*(1-wMEA)*(a + b*T + wMEA*c*(T-273.15)**(-1.5859))
     Cp_sol = scipy.integrate.quad(integrand, T1, T2) #returns analytic result [0] and estimated error[1]
+    print("Cp MEA-sol = ",Cp_sol[0])
     enthalpy = (con.hfsol + Cp_sol[0])*wMEA
     return enthalpy/1000
     
@@ -83,7 +85,7 @@ def enthalpy_MEA_H20_CO2(mass,w_MEAsol, w_co2, T1,T2,):
     
     enthalpy_MEA = enthalpy_MEAsol(w_MEAsol, T1,T2)
     enthalpy_co2 = Enthalpy_CO2(T1,T2, w_co2)
-    print(enthalpy_co2)
+    #print(enthalpy_co2)
     enthalpy = (enthalpy_MEA + enthalpy_co2 + con.habs_m - con.habs_m)*mass
     return enthalpy
 
